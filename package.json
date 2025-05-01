@@ -10,7 +10,8 @@
     "start": "serve out",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "deploy": "next build && gh-pages -d out"
+    "deploy": "next build && gh-pages -d out",
+    "deploy:local": "next build && serve out"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.0.4",

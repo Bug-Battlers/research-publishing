@@ -3,8 +3,9 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
-  basePath: process.env.NODE_ENV === 'production' ? '/studio' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/studio/' : '',
+  // Removing the basePath and assetPrefix for direct hosting
+  // basePath: process.env.NODE_ENV === 'production' ? '/studio' : '',
+  // assetPrefix: process.env.NODE_ENV === 'production' ? '/studio/' : '',
   typescript: {
     ignoreBuildErrors: true,
   },
