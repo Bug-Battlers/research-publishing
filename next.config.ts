@@ -3,9 +3,9 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
-  // Removing the basePath and assetPrefix for direct hosting
-  // basePath: process.env.NODE_ENV === 'production' ? '/studio' : '',
-  // assetPrefix: process.env.NODE_ENV === 'production' ? '/studio/' : '',
+  // GitHub Pages serves from repo name subdirectory
+  basePath: process.env.NODE_ENV === 'production' ? '/research-publishing' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/research-publishing/' : '',
   typescript: {
     ignoreBuildErrors: true,
   },
