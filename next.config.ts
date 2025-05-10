@@ -1,19 +1,38 @@
 import type {NextConfig} from 'next';
 
+// Determine if we're deploying to GitHub Pages
+const isGitHubPages = process.env.DEPLOY_TARGET === 'github';
+// Determine if we're deploying to Vercel (using Vercel's environment variable)
+const isVercel = process.env.VERCEL === '1';
+
+// Log deployment target for debugging
+console.log(`Building for: ${isGitHubPages ? 'GitHub Pages' : isVercel ? 'Vercel' : 'Local Development'}`);
+
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'export',
-  // GitHub Pages serves from repo name subdirectory
-  basePath: process.env.NODE_ENV === 'production' ? '/research-publishing' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/research-publishing/' : '',
+  
+  // Only use static export for GitHub Pages
+  ...(isGitHubPages && { 
+    output: 'export' 
+  }),
+  
+  // Only apply basePath and assetPrefix for GitHub Pages
+  ...(isGitHubPages && {
+    basePath: '/research-publishing',
+    assetPrefix: '/research-publishing/',
+  }),
+  
+  // Common configuration for all environments
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
+  // Images configuration - only unoptimize for GitHub Pages
   images: {
-    unoptimized: true,
+    ...(isGitHubPages && { unoptimized: true }),
     remotePatterns: [
       {
         protocol: 'https',

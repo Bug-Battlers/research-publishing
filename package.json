@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
+    "build": "next build && mkdir -p out/research-publishing && cp -r out/_next out/research-publishing/ && for file in out/*.html; do cp \"$file\" \"out/research-publishing/$(basename $file)\"; done",
     "start": "serve out",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",

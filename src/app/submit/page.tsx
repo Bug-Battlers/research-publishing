@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import React from "react";
 
 interface Author {
@@ -43,7 +42,6 @@ const SubmitPage = () => {
   const [userCaptcha, setUserCaptcha] = React.useState("");
   const [captchaError, setCaptchaError] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
 
   // Generate captcha on component mount
   React.useEffect(() => {
@@ -117,7 +115,7 @@ const SubmitPage = () => {
         formData.append("document", document);
       }
 
-      // Send form data to our API endpoint instead of Formspree
+      // Send form data to our API endpoint
       const response = await fetch("/api/submit", {
         method: "POST",
         body: formData,
@@ -130,7 +128,6 @@ const SubmitPage = () => {
 
       // Show success message
       setSubmitted(true);
-      setShowSuccessMessage(true);
 
       window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -148,12 +145,14 @@ const SubmitPage = () => {
       // Hide success message after 5 seconds
       setTimeout(() => {
         setSubmitted(false);
-        setShowSuccessMessage(false);
       }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Unknown error occurred';
       alert(
-        `There was an error submitting your form: ${error.message}. Please try again or contact support.`,
+        `There was an error submitting your form: ${errorMessage}. Please try again or contact support.`,
       );
     }
   };
@@ -170,258 +169,293 @@ const SubmitPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold text-primary mb-6">Submit Article</h1>
-      <p className="text-muted-foreground mb-4">
-        Submit your article to IJELS.
-      </p>
-      {submitted && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 animate-fade-in">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+    <div className="bg-white min-h-screen">
+      <div className="container mx-auto py-16 px-4 max-w-3xl">
+        <header className="mb-12 text-center">
+          <h1 className="text-3xl font-light tracking-tight text-black mb-4">Submit Article</h1>
+          <div className="w-16 h-0.5 bg-gray-200 mx-auto mb-6"></div>
+          <p className="text-sm text-gray-600">
+            Submit your manuscript for review and publication
+          </p>
+        </header>
+
+        {submitted && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+            <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-md">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-800 mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-normal text-gray-900 mb-3">
+                  Submission Successful
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">
+                  Your article has been submitted successfully. We'll review your
+                  submission and get back to you shortly.
+                </p>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm bg-black text-white border border-transparent rounded-none hover:bg-gray-800 focus:outline-none"
+                  onClick={() => setSubmitted(false)}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Submission Successful!
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Your article has been submitted successfully. We'll review your
-                submission and get back to you soon.
-              </p>
-              <button
-                type="button"
-                className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500"
-                onClick={() => setSubmitted(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="grid gap-4">
-        {/* First Author */}
-        <div className="bg-muted p-4 rounded-md">
-          <h2 className="text-xl font-semibold mb-4">First Author *</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label htmlFor="firstAuthorName">Name *</Label>
-              <Input
-                type="text"
-                id="firstAuthorName"
-                value={firstAuthor.name}
-                onChange={(e) =>
-                  setFirstAuthor({ ...firstAuthor, name: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="firstAuthorEmail">Email *</Label>
-              <Input
-                type="email"
-                id="firstAuthorEmail"
-                value={firstAuthor.email}
-                onChange={(e) =>
-                  setFirstAuthor({ ...firstAuthor, email: e.target.value })
-                }
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Corresponding Author */}
-        <div className="bg-muted p-4 rounded-md">
-          <h2 className="text-xl font-semibold mb-4">Corresponding Author *</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label htmlFor="correspondingAuthorName">Name *</Label>
-              <Input
-                type="text"
-                id="correspondingAuthorName"
-                value={correspondingAuthor.name}
-                onChange={(e) =>
-                  setCorrespondingAuthor({
-                    ...correspondingAuthor,
-                    name: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="correspondingAuthorEmail">Email *</Label>
-              <Input
-                type="email"
-                id="correspondingAuthorEmail"
-                value={correspondingAuthor.email}
-                onChange={(e) =>
-                  setCorrespondingAuthor({
-                    ...correspondingAuthor,
-                    email: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Authors */}
-        {additionalAuthors.map((author, index) => (
-          <div key={index} className="bg-muted p-4 rounded-md">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">{getAuthorLabel(index)}</h2>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleRemoveAuthor(index)}
-              >
-                Remove
-              </Button>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor={`author${index}Name`}>Name</Label>
-                <Input
-                  type="text"
-                  id={`author${index}Name`}
-                  value={author.name}
-                  onChange={(e) =>
-                    handleAdditionalAuthorChange(index, "name", e.target.value)
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor={`author${index}Email`}>Email</Label>
-                <Input
-                  type="email"
-                  id={`author${index}Email`}
-                  value={author.email}
-                  onChange={(e) =>
-                    handleAdditionalAuthorChange(index, "email", e.target.value)
-                  }
-                />
+                  Close
+                </button>
               </div>
             </div>
           </div>
-        ))}
-
-        {additionalAuthors.length < 2 && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleAddAuthor}
-            className="w-full"
-          >
-            Add Author ({additionalAuthors.length}/2)
-          </Button>
         )}
 
-        {/* Paper Details */}
-        <div>
-          <Label htmlFor="paperTitle">Paper Title *</Label>
-          <Input
-            type="text"
-            id="paperTitle"
-            value={paperTitle}
-            onChange={(e) => setPaperTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="paperType">Paper Type *</Label>
-          <Select
-            value={paperType || undefined}
-            onValueChange={setPaperType}
-            required
-          >
-            <SelectTrigger id="paperType" className="w-full">
-              <SelectValue placeholder="Select paper type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Research Paper">Research Paper</SelectItem>
-              <SelectItem value="Review Paper">Review Paper</SelectItem>
-              {/* Add more paper types as needed */}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="document">Upload Research Paper/Article *</Label>
-          <Input
-            type="file"
-            id="document"
-            onChange={handleDocumentChange}
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="captcha">Captcha *</Label>
-          <div className="flex flex-col gap-2">
-            <div className="bg-muted p-2 rounded text-center font-mono text-lg tracking-wider">
-              {captchaText}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* First Author */}
+          <section>
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">First Author</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <Label htmlFor="firstAuthorName" className="text-sm font-normal text-gray-700">Name *</Label>
+                <Input
+                  type="text"
+                  id="firstAuthorName"
+                  value={firstAuthor.name}
+                  onChange={(e) =>
+                    setFirstAuthor({ ...firstAuthor, name: e.target.value })
+                  }
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+              </div>
+              <div>
+                <Label htmlFor="firstAuthorEmail" className="text-sm font-normal text-gray-700">Email *</Label>
+                <Input
+                  type="email"
+                  id="firstAuthorEmail"
+                  value={firstAuthor.email}
+                  onChange={(e) =>
+                    setFirstAuthor({ ...firstAuthor, email: e.target.value })
+                  }
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                id="captcha"
-                value={userCaptcha}
-                onChange={(e) => {
-                  setUserCaptcha(e.target.value);
-                  setCaptchaError(false);
-                }}
-                required
-                className={captchaError ? "border-red-500" : ""}
-              />
+          </section>
+
+          {/* Corresponding Author */}
+          <section>
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">Corresponding Author</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <Label htmlFor="correspondingAuthorName" className="text-sm font-normal text-gray-700">Name *</Label>
+                <Input
+                  type="text"
+                  id="correspondingAuthorName"
+                  value={correspondingAuthor.name}
+                  onChange={(e) =>
+                    setCorrespondingAuthor({
+                      ...correspondingAuthor,
+                      name: e.target.value,
+                    })
+                  }
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+              </div>
+              <div>
+                <Label htmlFor="correspondingAuthorEmail" className="text-sm font-normal text-gray-700">Email *</Label>
+                <Input
+                  type="email"
+                  id="correspondingAuthorEmail"
+                  value={correspondingAuthor.email}
+                  onChange={(e) =>
+                    setCorrespondingAuthor({
+                      ...correspondingAuthor,
+                      email: e.target.value,
+                    })
+                  }
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Additional Authors */}
+          {additionalAuthors.map((author, index) => (
+            <section key={index}>
+              <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+                <h2 className="text-lg font-light">{getAuthorLabel(index)}</h2>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleRemoveAuthor(index)}
+                  className="text-xs rounded-none border-gray-200 hover:bg-gray-50 hover:text-black"
+                >
+                  Remove
+                </Button>
+              </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <Label htmlFor={`author${index}Name`} className="text-sm font-normal text-gray-700">Name</Label>
+                  <Input
+                    type="text"
+                    id={`author${index}Name`}
+                    value={author.name}
+                    onChange={(e) =>
+                      handleAdditionalAuthorChange(index, "name", e.target.value)
+                    }
+                    className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`author${index}Email`} className="text-sm font-normal text-gray-700">Email</Label>
+                  <Input
+                    type="email"
+                    id={`author${index}Email`}
+                    value={author.email}
+                    onChange={(e) =>
+                      handleAdditionalAuthorChange(index, "email", e.target.value)
+                    }
+                    className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                  />
+                </div>
+              </div>
+            </section>
+          ))}
+
+          {additionalAuthors.length < 2 && (
+            <div>
               <Button
                 type="button"
                 variant="outline"
-                onClick={generateCaptcha}
-                className="whitespace-nowrap"
+                onClick={handleAddAuthor}
+                className="w-full rounded-none border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-black"
               >
-                Refresh
+                Add Author ({additionalAuthors.length}/2)
               </Button>
             </div>
-            {captchaError && (
-              <p className="text-red-500 text-sm">
-                Incorrect captcha. Please try again.
-              </p>
-            )}
-          </div>
-        </div>
+          )}
 
-        <Button type="submit" size="lg" className="mt-4">
-          Submit Article
-        </Button>
-      </form>
-      <p className="mt-4 text-muted-foreground">
-        If there&apos;s a problem submitting the form, email your article at:{" "}
-        <a
-          href="mailto:sanskar.bugbattlers@gmail.com"
-          className="text-primary hover:underline"
-        >
-          sanskar.bugbattlers@gmail.com
-        </a>
-      </p>
+          {/* Paper Details */}
+          <section>
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">Paper Details</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <Label htmlFor="paperTitle" className="text-sm font-normal text-gray-700">Paper Title *</Label>
+                <Input
+                  type="text"
+                  id="paperTitle"
+                  value={paperTitle}
+                  onChange={(e) => setPaperTitle(e.target.value)}
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="paperType" className="text-sm font-normal text-gray-700">Paper Type *</Label>
+                <Select
+                  value={paperType || undefined}
+                  onValueChange={setPaperType}
+                  required
+                >
+                  <SelectTrigger id="paperType" className="w-full mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black">
+                    <SelectValue placeholder="Select paper type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Research Paper">Research Paper</SelectItem>
+                    <SelectItem value="Review Paper">Review Paper</SelectItem>
+                    <SelectItem value="Case Study">Case Study</SelectItem>
+                    <SelectItem value="Technical Note">Technical Note</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="document" className="text-sm font-normal text-gray-700">Upload Research Paper/Article *</Label>
+                <Input
+                  type="file"
+                  id="document"
+                  onChange={handleDocumentChange}
+                  required
+                  className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                />
+                <p className="mt-1 text-xs text-gray-500">Accepted file formats: .doc, .docx, .pdf (Max size: 10MB)</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Captcha */}
+          <section>
+            <div className="border-t border-gray-100 pt-6">
+              <Label htmlFor="captcha" className="text-sm font-normal text-gray-700">Verification *</Label>
+              <div className="flex flex-col gap-3 mt-2">
+                <div className="bg-gray-50 p-3 text-center font-mono text-base tracking-wider border border-gray-100">
+                  {captchaText}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    id="captcha"
+                    value={userCaptcha}
+                    onChange={(e) => {
+                      setUserCaptcha(e.target.value);
+                      setCaptchaError(false);
+                    }}
+                    required
+                    className={`border-gray-200 rounded-none focus:ring-0 focus:border-black ${captchaError ? "border-red-500" : ""}`}
+                    placeholder="Enter code above"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={generateCaptcha}
+                    className="whitespace-nowrap rounded-none border-gray-200 hover:bg-gray-50"
+                  >
+                    Refresh
+                  </Button>
+                </div>
+                {captchaError && (
+                  <p className="text-red-500 text-xs">
+                    Incorrect verification code. Please try again.
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <Button 
+            type="submit"
+            className="w-full py-3 bg-black hover:bg-gray-800 text-white rounded-none mt-8"
+          >
+            Submit Article
+          </Button>
+        </form>
+        
+        <footer className="mt-12 pt-6 border-t border-gray-100 text-center">
+          <p className="text-xs text-gray-500">
+            If you encounter any issues, please email your article to:{" "}
+            <a
+              href="mailto:journal@example.com"
+              className="text-gray-800 hover:underline"
+            >
+              journal@example.com
+            </a>
+          </p>
+        </footer>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,9 @@
+{
+  "public": "out",
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/", "destination": "/research-publishing" }
+  ],
+  "cleanUrls": true
+}
+

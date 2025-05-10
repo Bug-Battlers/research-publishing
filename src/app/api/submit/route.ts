@@ -1,6 +1,23 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+/**
+ * IMPORTANT: When using Gmail SMTP with Vercel or other serverless platforms:
+ * 
+ * Gmail blocks login attempts from unknown servers by default as a security measure.
+ * To fix email sending on Vercel, you need to:
+ * 
+ * 1. Enable 2-Step Verification for your Google account:
+ *    - Go to https://myaccount.google.com/security
+ *    - Enable 2-Step Verification
+ * 
+ * 2. Create an App Password specifically for this application:
+ *    - Go to https://myaccount.google.com/apppasswords
+ *    - Select "App: Mail" and "Device: Other (Custom name)"
+ *    - Name it something recognizable like "Vercel IJELS Website"
+ *    - Use the generated 16-character password in your SMTP_PASSWORD env variable
+ */
+
 export async function POST(request: Request) {
   try {
     console.log("API route called, processing form data...");
@@ -44,8 +61,8 @@ export async function POST(request: Request) {
       });
     }
 
-    // Configure email transport
-    const transporter = nodemailer.createTransport({
+    // Configure email transport with detailed debugging options
+    const transportOptions = {
       host: process.env.SMTP_HOST || "smtp.gmail.com",
       port: parseInt(process.env.SMTP_PORT || "587"),
       secure: process.env.SMTP_SECURE === "true",
@@ -53,7 +70,39 @@ export async function POST(request: Request) {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
       },
-    });
+      // Gmail specific settings to improve reliability
+      tls: {
+        // Disable TLS verification in development for testing
+        rejectUnauthorized: process.env.NODE_ENV === 'production',
+      },
+      // Enable debug logging if SMTP_DEBUG env variable is set
+      ...(process.env.SMTP_DEBUG === "true" && {
+        debug: true,
+        logger: true
+      })
+    };
+
+    console.log(`SMTP Configuration: ${process.env.SMTP_HOST}:${process.env.SMTP_PORT} (secure: ${process.env.SMTP_SECURE})`);
+    const transporter = nodemailer.createTransport(transportOptions);
+
+    // Verify SMTP connection before sending emails
+    try {
+      console.log("Verifying SMTP connection...");
+      await transporter.verify();
+      console.log("SMTP connection verified successfully");
+    } catch (verifyError) {
+      console.error("SMTP verification failed:", verifyError);
+      if (verifyError instanceof Error) {
+        // Check for common Gmail authentication errors
+        if (verifyError.message.includes("Invalid login") || 
+            verifyError.message.includes("Username and Password not accepted")) {
+          throw new Error(
+            "Gmail authentication failed. If using Gmail on Vercel, you need to use an App Password instead of your regular password. See comments at the top of this file for instructions."
+          );
+        }
+      }
+      throw verifyError;
+    }
 
     // Create authors HTML table rows
     let additionalAuthorsHtml = "";
@@ -147,7 +196,8 @@ export async function POST(request: Request) {
     `;
 
     console.log("Sending admin email...");
-    await transporter.sendMail({
+    console.log(`From: ${process.env.SMTP_USER}, To: sanskar.bugbattlers@gmail.com`);
+    const adminEmailResult = await transporter.sendMail({
       from: `"${firstAuthorName} via IJELS" <${process.env.SMTP_USER}>`,
       to: "sanskar.bugbattlers@gmail.com",
       replyTo: correspondingAuthorEmail,
@@ -155,27 +205,62 @@ export async function POST(request: Request) {
       html: adminEmailHtml,
       attachments: attachments,
     });
+    console.log("Admin email sent successfully:", adminEmailResult.messageId);
 
     console.log("Sending confirmation email...");
-    await transporter.sendMail({
+    console.log(`From: ${process.env.SMTP_USER}, To: ${correspondingAuthorEmail}`);
+    const authorEmailResult = await transporter.sendMail({
       from: `"IJELS Editorial Team" <${process.env.SMTP_USER}>`,
       to: correspondingAuthorEmail,
       subject: `Submission Received: ${paperTitle}`,
       html: authorConfirmationHtml,
     });
+    console.log("Author confirmation email sent successfully:", authorEmailResult.messageId);
 
-    console.log("Emails sent successfully");
+    console.log("All emails sent successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in /api/submit route:", error);
+    
+    // Detailed error logging
     if (error instanceof Error) {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
+      
+      // Specific error handling for common SMTP issues
+      let errorMessage = error.message;
+      
+      // Check for Gmail authentication issues
+      if (error.message.includes("Invalid login") || 
+          error.message.includes("Username and Password not accepted") ||
+          error.message.includes("Invalid credentials")) {
+        errorMessage = "Gmail authentication failed. If using Gmail with Vercel, you need to use an App Password. Visit https://myaccount.google.com/apppasswords to create one.";
+      } 
+      // Check for connection issues
+      else if (error.message.includes("Connection timed out") || 
+               error.message.includes("Connection refused")) {
+        errorMessage = "SMTP server connection failed. This may be due to firewall restrictions on Vercel or incorrect SMTP settings.";
+      }
+      // Check for TLS/SSL issues
+      else if (error.message.includes("SSL routines") || 
+               error.message.includes("certificate")) {
+        errorMessage = "SMTP TLS/SSL error. Try setting SMTP_SECURE to 'false' and ensure port 587 is used for Gmail.";
+      }
+      
+      return NextResponse.json(
+        {
+          success: false,
+          error: errorMessage,
+          originalError: error.message,
+        },
+        { status: 500 },
+      );
     }
+    
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to send email",
+        error: "Failed to send email. Unknown error occurred.",
       },
       { status: 500 },
     );
