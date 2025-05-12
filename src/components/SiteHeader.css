@@ -1,0 +1,111 @@
+/* Add this to your global CSS file or use a CSS-in-JS solution like styled-components */
+
+.header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
+.logo span {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: #333333;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #555555;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #007bff;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.login-button {
+  background-color: #ffffff;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.login-button:hover {
+  background-color: #f0f7ff;
+}
+
+.intro-training-button {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.intro-training-button:hover {
+  background-color: #0056b3;
+}
+
+.hero {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #333333;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #333333;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #555555;
+}
+
+.reviews {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.reviews span {
+  color: #ffc107;
+}
+
+.reviews p {
+  color: #555555;
+}

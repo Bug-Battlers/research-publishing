@@ -1,39 +1,28 @@
 "use client";
-
 import { usePathname } from "next/navigation";
-import { BrainCircuit } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { BrainCircuit, Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
   { label: "About", href: "/about" },
   {
     label: "For Authors",
     href: "/authors",
-    submenu: [
+    dropdown: [
       { label: "Author Guidelines", href: "/authors/author-guidelines" },
+      { label: "Publication Ethics", href: "/authors/publication-policies" },
+      { label: "Peer Review", href: "/authors/peer-review" },
+      { label: "Submit Paper", href: "/authors/submit-manuscript" },
+      { label: "Open Access Policy", href: "/authors/open-access-policy" },
       {
-        label: "Publication Policies and Ethics",
-        href: "/authors/publication-policies",
+        label: "Submit Manuscript Online",
+        href: "/authors/submit-manuscript-online",
       },
-      { label: "Peer Review Process", href: "/authors/peer-review" },
-      { label: "Open Access Policy", href: "/authors/open-access" },
-      { label: "Submit Manuscript Online", href: "/authors/submit-manuscript" },
       { label: "Indexing and Archiving", href: "/authors/indexing-archiving" },
       { label: "Download Formats", href: "/authors/download-formats" },
-      {
-        label: "Plagiarism Checker - Turnitin",
-        href: "/authors/plagiarism-checker",
-      },
+      { label: "Plagiarism Checker", href: "/authors/plagiarism-checker" },
     ],
   },
   { label: "Issues", href: "/issues" },
@@ -47,157 +36,144 @@ const NAV_ITEMS = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const isActiveLink = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
+  const isActiveLink = (href: string): boolean => {
+    if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
-  const isActiveDropdown = (item: any) => {
-    if (!item.submenu) return false;
-    return item.submenu.some((subItem: any) =>
-      pathname.startsWith(subItem.href),
-    );
+  const toggleDropdown = (label: string) => {
+    setOpenDropdown(openDropdown === label ? null : label);
   };
 
   return (
-    <header className="w-full border-b bg-background">
-      <div className="w-full max-w-full h-16 px-4 md:px-6">
-        <div className="flex h-full items-center">
-          {/* Logo on the left */}
-          <div className="flex-shrink-0 mr-auto">
-            <Link href="/" className="flex items-center space-x-2">
-              <BrainCircuit className="h-6 w-6 text-primary" />
-              <span className="font-bold text-primary">SIRJH</span>
-            </Link>
-          </div>
+    <header className="w-full sticky top-0 z-50 bg-primary text-background shadow-md transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex justify-between items-center">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <BrainCircuit className="h-6 w-6" />
+            <span className="font-bold text-lg">SIRJH</span>
+          </Link>
 
-          {/* Tab Navigation (full screen) completely right-aligned */}
-          <nav className="hidden xl:flex items-center justify-end w-full space-x-1 lg:space-x-2">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-4">
             {NAV_ITEMS.map((item) =>
-              item.submenu ? (
-                <DropdownMenu key={item.label}>
-                  <DropdownMenuTrigger
-                    className={cn(
-                      "px-3 py-2 text-sm font-medium transition-colors relative",
-                      isActiveDropdown(item)
-                        ? "text-primary"
-                        : "text-foreground hover:text-primary",
-                    )}
+              item.dropdown ? (
+                <div key={item.label} className="relative">
+                  <button
+                    onClick={() => toggleDropdown(item.label)}
+                    className={`text-sm font-medium transition-all duration-300 px-4 py-2 rounded-full flex items-center ${
+                      isActiveLink(item.href)
+                        ? "bg-background text-primary"
+                        : "text-background hover:bg-secondary hover:text-primary"
+                    }`}
                   >
-                    <span>{item.label}</span>
-                    {isActiveDropdown(item) && (
-                      <span className="absolute bottom-0 left-1/2 w-2/3 h-[2px] bg-primary -translate-x-1/2 transform transition-all duration-300 ease-in-out" />
-                    )}
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {item.submenu.map((subItem) => (
-                      <DropdownMenuItem key={subItem.label} className="p-0">
+                    {item.label} <ChevronDown className="inline ml-1" />
+                  </button>
+                  {openDropdown === item.label && (
+                    <div className="absolute left-0 mt-2 w-48 bg-background text-primary rounded-md shadow-lg z-10">
+                      {item.dropdown.map((dropdownItem) => (
                         <Link
-                          href={subItem.href}
-                          className={cn(
-                            "block w-full px-4 py-2 hover:bg-muted transition-colors duration-200",
-                            isActiveLink(subItem.href)
-                              ? "text-primary font-medium"
-                              : "",
-                          )}
+                          key={dropdownItem.label}
+                          href={dropdownItem.href}
+                          className={`block px-4 py-2 text-sm hover:bg-secondary hover:text-primary ${
+                            isActiveLink(dropdownItem.href)
+                              ? "bg-secondary text-primary"
+                              : ""
+                          }`}
                         >
-                          {subItem.label}
+                          {dropdownItem.label}
                         </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={cn(
-                    "px-3 py-2 text-sm font-medium transition-colors relative group",
+                  className={`text-sm font-medium transition-all duration-300 px-4 py-2 rounded-full ${
                     isActiveLink(item.href)
-                      ? "text-primary"
-                      : "text-foreground hover:text-primary",
-                  )}
+                      ? "bg-background text-primary"
+                      : "text-background hover:bg-secondary hover:text-primary"
+                  }`}
                 >
-                  <span>{item.label}</span>
-
-                  {/* Active indicator with animation */}
-                  <span
-                    className={cn(
-                      "absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[2px] bg-primary transition-all duration-300 ease-in-out",
-                      isActiveLink(item.href)
-                        ? "w-2/3 opacity-100"
-                        : "w-0 opacity-0 group-hover:w-1/2 group-hover:opacity-50",
-                    )}
-                  />
+                  {item.label}
                 </Link>
-              ),
+              )
             )}
           </nav>
 
-          {/* Mobile Navigation (burger menu) aligned to the right */}
-          <div className="flex xl:hidden ml-auto">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-full sm:w-1/2 bg-background"
-              >
-                <div className="mt-8 grid gap-6 text-sm">
-                  {NAV_ITEMS.map((item) =>
-                    item.submenu ? (
-                      <div key={item.label} className="space-y-3">
-                        <p
-                          className={cn(
-                            "font-medium transition-colors duration-200",
-                            isActiveDropdown(item) ? "text-primary" : "",
-                          )}
+          {/* Mobile Menu Toggle Button */}
+          <button
+            className="md:hidden text-background"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle navigation"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden mt-4 space-y-2"
+          >
+            {NAV_ITEMS.map((item) =>
+              item.dropdown ? (
+                <div key={item.label}>
+                  <button
+                    onClick={() => toggleDropdown(item.label)}
+                    className="block text-sm font-medium px-4 py-2 rounded-full w-full text-left"
+                  >
+                    {item.label} <ChevronDown className="inline ml-1" />
+                  </button>
+                  {openDropdown === item.label && (
+                    <div className="ml-4 space-y-2">
+                      {item.dropdown.map((dropdownItem) => (
+                        <Link
+                          key={dropdownItem.label}
+                          href={dropdownItem.href}
+                          className={`block text-sm font-medium px-4 py-2 rounded-full ${
+                            isActiveLink(dropdownItem.href)
+                              ? "bg-background text-primary"
+                              : "text-background hover:bg-secondary hover:text-primary"
+                          }`}
+                          onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          {item.label}
-                        </p>
-                        <div className="ml-4 space-y-2 border-l-2 pl-4">
-                          {item.submenu.map((subItem) => (
-                            <Link
-                              key={subItem.label}
-                              href={subItem.href}
-                              className={cn(
-                                "block py-1 hover:text-primary transition-colors duration-200",
-                                isActiveLink(subItem.href)
-                                  ? "text-primary font-medium"
-                                  : "",
-                              )}
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        className={cn(
-                          "block py-2 hover:text-primary transition-colors duration-200",
-                          isActiveLink(item.href)
-                            ? "text-primary font-medium"
-                            : "",
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    ),
+                          {dropdownItem.label}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`block text-sm font-medium px-4 py-2 rounded-full ${
+                    isActiveLink(item.href)
+                      ? "bg-background text-primary"
+                      : "text-background hover:bg-secondary hover:text-primary"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
+          </motion.nav>
+        )}
       </div>
     </header>
   );

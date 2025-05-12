@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface TeamMember {
@@ -29,7 +30,7 @@ export function TeamSection({
   // Function to extract email from bio text
   const extractEmail = (bioText: string | undefined): string | null => {
     if (!bioText) return null;
-    
+
     const emailMatch = bioText.match(/Email:\s*([^\s]+@[^\s]+\.[^\s]+)/i);
     return emailMatch ? emailMatch[1] : null;
   };
@@ -56,27 +57,36 @@ export function TeamSection({
         <div className="grid gap-x-8 gap-y-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {members.map((member) => {
             const email = extractEmail(member.bio);
-            
+
             return (
-              <div key={member.id} className="group text-center">
+              <motion.div
+                key={member.id}
+                className="group text-center shadow-lg rounded-xl overflow-hidden bg-white transition-all duration-300 hover:shadow-2xl"
+                whileHover={{ scale: 1.05, y: -5 }}
+              >
                 <div className="mb-5 overflow-hidden mx-auto max-w-xs">
                   <img
                     src={member.imageUrl}
                     alt={`${member.name}, ${member.title}`}
-                    className="w-full aspect-square object-cover filter grayscale transition-all duration-300 group-hover:grayscale-0"
+                    className="w-full aspect-square object-cover transition-all duration-300 group-hover:grayscale-0 group-hover:scale-105"
                   />
                 </div>
-                <h3 className="text-xl font-normal text-black mb-1">{member.name}</h3>
-                <p className="text-sm text-gray-600 mb-3">{member.title}</p>
-                {member.bio && !email && (
-                  <p className="text-sm text-gray-700 leading-relaxed">{member.bio}</p>
-                )}
+                <h3 className="text-xl font-semibold text-black mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">{member.title}</p>
                 {email && (
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    Email: <a href={`mailto:${email}`} className="text-gray-800 hover:underline">{email}</a>
+                    Email:{" "}
+                    <a
+                      href={`mailto:${email}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {email}
+                    </a>
                   </p>
                 )}
-              </div>
+              </motion.div>
             );
           })}
         </div>

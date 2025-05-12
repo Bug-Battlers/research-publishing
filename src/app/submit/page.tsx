@@ -30,7 +30,7 @@ const SubmitPage = () => {
 
   // Additional authors
   const [additionalAuthors, setAdditionalAuthors] = React.useState<Author[]>(
-    [],
+    []
   );
 
   const [paperTitle, setPaperTitle] = React.useState("");
@@ -69,7 +69,7 @@ const SubmitPage = () => {
   const handleAdditionalAuthorChange = (
     index: number,
     field: keyof Author,
-    value: string,
+    value: string
   ) => {
     const updatedAuthors = [...additionalAuthors];
     updatedAuthors[index] = { ...updatedAuthors[index], [field]: value };
@@ -148,11 +148,10 @@ const SubmitPage = () => {
       }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       alert(
-        `There was an error submitting your form: ${errorMessage}. Please try again or contact support.`,
+        `There was an error submitting your form: ${errorMessage}. Please try again or contact support.`
       );
     }
   };
@@ -170,15 +169,22 @@ const SubmitPage = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="container mx-auto py-16 px-4 max-w-3xl">
-        <header className="mb-12 text-center">
-          <h1 className="text-3xl font-light tracking-tight text-black mb-4">Submit Article</h1>
-          <div className="w-16 h-0.5 bg-gray-200 mx-auto mb-6"></div>
-          <p className="text-sm text-gray-600">
+      <header
+        className="text-center bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url('https://img.freepik.com/premium-photo/woman-booking-ticket-online_53876-51226.jpg?ga=GA1.1.1300420666.1732270462&semt=ais_hybrid&w=740')",
+        }}
+      >
+        <div className="bg-black bg-opacity-60 py-20 px-4">
+          <h1 className="text-4xl text-white mb-6 py-5">Submit Article</h1>
+          <div className="w-16 h-0.5 bg-blue-500 mx-auto mb-8"></div>
+          <p className="text-white max-w-xl mx-auto py-4">
             Submit your manuscript for review and publication
           </p>
-        </header>
-
+        </div>
+      </header>
+      <div className="container mx-auto py-16 px-4 max-w-3xl">
         {submitted && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
             <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-md">
@@ -203,8 +209,8 @@ const SubmitPage = () => {
                   Submission Successful
                 </h2>
                 <p className="text-sm text-gray-600 mb-6">
-                  Your article has been submitted successfully. We'll review your
-                  submission and get back to you shortly.
+                  Your article has been submitted successfully. We'll review
+                  your submission and get back to you shortly.
                 </p>
                 <button
                   type="button"
@@ -221,10 +227,17 @@ const SubmitPage = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* First Author */}
           <section>
-            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">First Author</h2>
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">
+              First Author
+            </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <Label htmlFor="firstAuthorName" className="text-sm font-normal text-gray-700">Name *</Label>
+                <Label
+                  htmlFor="firstAuthorName"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Name *
+                </Label>
                 <Input
                   type="text"
                   id="firstAuthorName"
@@ -237,7 +250,12 @@ const SubmitPage = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="firstAuthorEmail" className="text-sm font-normal text-gray-700">Email *</Label>
+                <Label
+                  htmlFor="firstAuthorEmail"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Email *
+                </Label>
                 <Input
                   type="email"
                   id="firstAuthorEmail"
@@ -254,10 +272,17 @@ const SubmitPage = () => {
 
           {/* Corresponding Author */}
           <section>
-            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">Corresponding Author</h2>
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">
+              Corresponding Author
+            </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <Label htmlFor="correspondingAuthorName" className="text-sm font-normal text-gray-700">Name *</Label>
+                <Label
+                  htmlFor="correspondingAuthorName"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Name *
+                </Label>
                 <Input
                   type="text"
                   id="correspondingAuthorName"
@@ -273,7 +298,12 @@ const SubmitPage = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="correspondingAuthorEmail" className="text-sm font-normal text-gray-700">Email *</Label>
+                <Label
+                  htmlFor="correspondingAuthorEmail"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Email *
+                </Label>
                 <Input
                   type="email"
                   id="correspondingAuthorEmail"
@@ -307,25 +337,43 @@ const SubmitPage = () => {
               </div>
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <Label htmlFor={`author${index}Name`} className="text-sm font-normal text-gray-700">Name</Label>
+                  <Label
+                    htmlFor={`author${index}Name`}
+                    className="text-sm font-normal text-gray-700"
+                  >
+                    Name
+                  </Label>
                   <Input
                     type="text"
                     id={`author${index}Name`}
                     value={author.name}
                     onChange={(e) =>
-                      handleAdditionalAuthorChange(index, "name", e.target.value)
+                      handleAdditionalAuthorChange(
+                        index,
+                        "name",
+                        e.target.value
+                      )
                     }
                     className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
                   />
                 </div>
                 <div>
-                  <Label htmlFor={`author${index}Email`} className="text-sm font-normal text-gray-700">Email</Label>
+                  <Label
+                    htmlFor={`author${index}Email`}
+                    className="text-sm font-normal text-gray-700"
+                  >
+                    Email
+                  </Label>
                   <Input
                     type="email"
                     id={`author${index}Email`}
                     value={author.email}
                     onChange={(e) =>
-                      handleAdditionalAuthorChange(index, "email", e.target.value)
+                      handleAdditionalAuthorChange(
+                        index,
+                        "email",
+                        e.target.value
+                      )
                     }
                     className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
                   />
@@ -349,11 +397,18 @@ const SubmitPage = () => {
 
           {/* Paper Details */}
           <section>
-            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">Paper Details</h2>
-            
+            <h2 className="text-lg font-light mb-4 pb-2 border-b border-gray-100">
+              Paper Details
+            </h2>
+
             <div className="space-y-6">
               <div>
-                <Label htmlFor="paperTitle" className="text-sm font-normal text-gray-700">Paper Title *</Label>
+                <Label
+                  htmlFor="paperTitle"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Paper Title *
+                </Label>
                 <Input
                   type="text"
                   id="paperTitle"
@@ -365,26 +420,43 @@ const SubmitPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="paperType" className="text-sm font-normal text-gray-700">Paper Type *</Label>
+                <Label
+                  htmlFor="paperType"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Paper Type *
+                </Label>
                 <Select
                   value={paperType || undefined}
                   onValueChange={setPaperType}
                   required
                 >
-                  <SelectTrigger id="paperType" className="w-full mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black">
+                  <SelectTrigger
+                    id="paperType"
+                    className="w-full mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
+                  >
                     <SelectValue placeholder="Select paper type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Research Paper">Research Paper</SelectItem>
+                    <SelectItem value="Research Paper">
+                      Research Paper
+                    </SelectItem>
                     <SelectItem value="Review Paper">Review Paper</SelectItem>
                     <SelectItem value="Case Study">Case Study</SelectItem>
-                    <SelectItem value="Technical Note">Technical Note</SelectItem>
+                    <SelectItem value="Technical Note">
+                      Technical Note
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor="document" className="text-sm font-normal text-gray-700">Upload Research Paper/Article *</Label>
+                <Label
+                  htmlFor="document"
+                  className="text-sm font-normal text-gray-700"
+                >
+                  Upload Research Paper/Article *
+                </Label>
                 <Input
                   type="file"
                   id="document"
@@ -392,7 +464,9 @@ const SubmitPage = () => {
                   required
                   className="mt-1 border-gray-200 rounded-none focus:ring-0 focus:border-black"
                 />
-                <p className="mt-1 text-xs text-gray-500">Accepted file formats: .doc, .docx, .pdf (Max size: 10MB)</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Accepted file formats: .doc, .docx, .pdf (Max size: 10MB)
+                </p>
               </div>
             </div>
           </section>
@@ -400,7 +474,12 @@ const SubmitPage = () => {
           {/* Captcha */}
           <section>
             <div className="border-t border-gray-100 pt-6">
-              <Label htmlFor="captcha" className="text-sm font-normal text-gray-700">Verification *</Label>
+              <Label
+                htmlFor="captcha"
+                className="text-sm font-normal text-gray-700"
+              >
+                Verification *
+              </Label>
               <div className="flex flex-col gap-3 mt-2">
                 <div className="bg-gray-50 p-3 text-center font-mono text-base tracking-wider border border-gray-100">
                   {captchaText}
@@ -415,7 +494,9 @@ const SubmitPage = () => {
                       setCaptchaError(false);
                     }}
                     required
-                    className={`border-gray-200 rounded-none focus:ring-0 focus:border-black ${captchaError ? "border-red-500" : ""}`}
+                    className={`border-gray-200 rounded-none focus:ring-0 focus:border-black ${
+                      captchaError ? "border-red-500" : ""
+                    }`}
                     placeholder="Enter code above"
                   />
                   <Button
@@ -436,14 +517,14 @@ const SubmitPage = () => {
             </div>
           </section>
 
-          <Button 
+          <Button
             type="submit"
-            className="w-full py-3 bg-black hover:bg-gray-800 text-white rounded-none mt-8"
+            className="w-full py-3 bg-primary hover:bg-gray-800 text-white rounded-none mt-8"
           >
             Submit Article
           </Button>
         </form>
-        
+
         <footer className="mt-12 pt-6 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-500">
             If you encounter any issues, please email your article to:{" "}
